@@ -104,13 +104,14 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Observability")
 		os.Exit(1)
 	}
-
-	if !disableWebhooks {
-		if err = (&apiv1.Observability{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Observability")
-			os.Exit(1)
+	/*
+		if !disableWebhooks {
+			if err = (&apiv1.Observability{}).SetupWebhookWithManager(mgr); err != nil {
+				setupLog.Error(err, "unable to create webhook", "webhook", "Observability")
+				os.Exit(1)
+			}
 		}
-	}
+	*/
 	// +kubebuilder:scaffold:builder
 	mgr.Add(runners.NewOperandInitializer(func() error {
 		if err = observabilityReconciler.InitializeOperand(mgr); err != nil {
