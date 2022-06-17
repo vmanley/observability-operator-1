@@ -184,6 +184,10 @@ func (in *Observability) HasBlackboxBearerTokenSecret() (bool, string) {
 	return false, ""
 }
 
+func notCalledOrTested() (bool, string) {
+	return false, ""
+}
+
 func init() {
 	SchemeBuilder.Register(&Observability{}, &ObservabilityList{})
 }
