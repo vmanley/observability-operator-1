@@ -393,9 +393,19 @@ func (r *Reconciler) createGlobalConfig(ctx context.Context, cr *v1.Observabilit
 		ResolveTimeout: "5m",
 	}
 
-	if (!cr.SmtpDisabled() && len(indexes[0].Config.Alertmanager.SmtpToEmailAddress) == 0) || (!cr.SmtpDisabled() && indexes[0].Config.Alertmanager.SmtpFromEmailAddress == "") {
+	if cr.SmtpDisabled() {
+		return globalConfig, nil
+	}
+
+	if indexes[0].Config.Alertmanager == nil {
+		return globalConfig, nil
+	}
+
+	// cycle through indexes
+
+	if indexes[0].Config.Alertmanager.SmtpFromEmailAddress == "" || len(indexes[0].Config.Alertmanager.SmtpToEmailAddress) == 0 {
 		r.logger.Info("both the to and from email address in the index.json file need to be set when smtp is enabled")
-	} else if !cr.SmtpDisabled() && len(indexes[0].Config.Alertmanager.SmtpToEmailAddress) > 0 && indexes[0].Config.Alertmanager.SmtpFromEmailAddress != "" {
+	} else if len(indexes[0].Config.Alertmanager.SmtpToEmailAddress) > 0 && indexes[0].Config.Alertmanager.SmtpFromEmailAddress != "" {
 
 		smtpSecret, err := r.getSmtpSecret(ctx, cr, indexes[0].Config.Alertmanager)
 
@@ -419,11 +429,7 @@ func (r *Reconciler) createGlobalConfig(ctx context.Context, cr *v1.Observabilit
 			SmtpSmartHost:    fmt.Sprintf("%s:%s", string(smtpSecret["host"]), string(smtpSecret["port"])),
 			SmtpFrom:         indexes[0].Config.Alertmanager.SmtpFromEmailAddress,
 		}
-
-	} else {
-		globalConfig = &v1.AlertmanagerConfigGlobal{
-			ResolveTimeout: "5m",
-		}
 	}
+
 	return globalConfig, nil
 }

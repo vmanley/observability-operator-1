@@ -33,7 +33,7 @@ func GetResourcesDeployment(cr *v1.Observability) *appsv1.Deployment {
 func GetResourcesRoute(cr *v1.Observability) *v12.Route {
 	return &v12.Route{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "observability-resources-route",
+			Name:      "o",
 			Namespace: cr.Namespace,
 		},
 	}
